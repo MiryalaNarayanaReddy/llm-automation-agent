@@ -5,6 +5,16 @@ import re
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 
+
+import os
+
+AIPROXY_TOKEN = os.environ.get("AIPROXY_TOKEN")
+
+if not AIPROXY_TOKEN:
+    raise ValueError("AIPROXY_TOKEN is not set. Please set it as an environment variable.")
+
+print(f"Using AI Proxy Token: {AIPROXY_TOKEN[:5]}*****")  # Masked for security
+
 # Initialize FastAPI app
 app = FastAPI()
 
@@ -17,6 +27,11 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+
+@app.get("/")
+async def root():
+    """Return a welcome message"""  
+    return {"message": "Welcome to the LLM Automation Agent!","token": AIPROXY_TOKEN}
 
 @app.post("/run")
 async def execute(task: str):
@@ -37,6 +52,6 @@ async def read(path: str):
 
     return {"content": open(x).read()}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
