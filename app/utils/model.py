@@ -15,7 +15,9 @@ class LLMModel:
 
         payload = {
             "model": "gpt-4o-mini",
-            "messages": [{"role": "user", "content": prompt}],
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant. You have to write executable bash commands, python code snippets and python scripts. Make sure sure that the read/write paths are inside the ./data directory. if user says /data then use the ./data directory."},
+                {"role": "user", "content": prompt}],
             "functions": self.tools,
             "function_call": "auto"  # Let the model decide when to call a function
         }
