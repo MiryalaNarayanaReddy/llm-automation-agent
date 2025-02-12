@@ -6,7 +6,6 @@ from utils.execute_tool import execute_all
 import os
 
 AIPROXY_TOKEN = os.environ.get("AIPROXY_TOKEN")
-AIPROXY_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcnlhbGEubmFyYXlhbmFyZWRkeUBzdHJhaXZlLmNvbSJ9.BzleqpGMCAuGL5B0KEigEYvpwgTi8mtfisCtUGlMs64"
 
 if not AIPROXY_TOKEN:
     raise ValueError("AIPROXY_TOKEN is not set. Please set it as an environment variable.")
