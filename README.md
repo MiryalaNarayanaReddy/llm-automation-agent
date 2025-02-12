@@ -26,3 +26,11 @@ sudo docker login
 sudo docker tag myapp <username>/myapp:latest
 sudo docker push <username>/myapp:latest
 ``` 
+
+
+# testing
+
+
+```bash
+pip install pytest
+pytest
