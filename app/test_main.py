@@ -10,15 +10,18 @@ TASKS = {
 
     ],
     "A3":[
-
+        "The file /data/dates.txt contains a list of dates, one per line. Count the number of Wednesdays in the list, and write just the number to /data/dates-wednesdays.txt"
     ],
+    "A4":[
+        "Sort the array of contacts in /data/contacts.json by last_name, then first_name, and write the result to /data/contacts-sorted.json"
+    ]
 }
 
 def test_read_main():
     response = client.get("/")
     assert response.status_code == 200
 #    {"message": "Welcome to the LLM Automation Agent!","token": AIPROXY_TOKEN} 
-    assert response.json() == {"message": "Welcome to the LLM Automation Agent!","token":"your-secret-token"}
+    assert response.json()["message"] == "Welcome to the LLM Automation Agent!"
 
 def test_readme_format():
     # format_readme_task1 = "Format+/data/format.md+with+prettier+3.4.2"

@@ -6,6 +6,7 @@ from utils.execute_tool import execute_all
 import os
 
 AIPROXY_TOKEN = os.environ.get("AIPROXY_TOKEN")
+AIPROXY_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcnlhbGEubmFyYXlhbmFyZWRkeUBzdHJhaXZlLmNvbSJ9.BzleqpGMCAuGL5B0KEigEYvpwgTi8mtfisCtUGlMs64"
 
 if not AIPROXY_TOKEN:
     raise ValueError("AIPROXY_TOKEN is not set. Please set it as an environment variable.")
@@ -69,22 +70,18 @@ async def execute(task: str):
     
         
         bash_commands = []
-        python_snippets =[]  
-        python_scripts = []
+        python_codes =[]
         if "bash_commands" in arguments:
             bash_commands = arguments["bash_commands"]
-        if "python_snippets" in arguments:
-            python_snippets = arguments["python_snippets"]
-        if "python_scripts" in arguments:   
-            python_scripts = arguments["python_scripts"]
+        if "python_codes" in arguments:
+            python_codes = arguments["python_codes"]
 
         print(f"Executing function: {function_name}")
         print(f"Bash commands: {bash_commands}")
-        print(f"Python snippets: {python_snippets}")    
-        print(f"Python scripts: {python_scripts}")
+        print(f"Python codes: {python_codes}")
 
         try: 
-            execute_all(bash_commands, python_snippets, python_scripts)
+            execute_all(bash_commands, python_codes)
         except Exception as e:
             return {"error": str(e)}    
     else:
