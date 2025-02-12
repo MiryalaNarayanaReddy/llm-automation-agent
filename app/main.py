@@ -4,10 +4,10 @@ import os
 import re
 import requests
 from fastapi.middleware.cors import CORSMiddleware
-from utils.tools import query_llmfoundry, TOOLS
 from utils.a1 import format_file
-
-import os
+from utils.model import LLMModel
+from utils.tools import TOOLS
+from utils.execute_tool import execute_tool
 
 AIPROXY_TOKEN = os.environ.get("AIPROXY_TOKEN")
 
@@ -29,6 +29,10 @@ app.add_middleware(
 )
 
 
+# configure model
+
+llm = LLMModel("gpt-4o-mini", AIPROXY_TOKEN, TOOLS)
+
 import json
 
 @app.get("/")
@@ -40,30 +44,24 @@ async def execute(task: str):
     """Execute a task and return 'done' if successful."""
 
     print(f"Executing task: {task}")
-    response = query_llmfoundry(AIPROXY_TOKEN, task, TOOLS)
+    response = llm.getResponse(task)
 
-    # Extract function call details
-    choices = response.get("result", {}).get("choices", [])
-    
-    if not choices:
-        return {"error": "No function call detected."}
+    # print(response.choices[0].message.function_call)
+    function = response['choices'][0]['message']['function_call']
 
-    function_call = choices[0].get("message", {}).get("function_call", {})
+    if function is not None:
+        function_name = function['name']
+        arguments = json.loads(function['arguments'])
 
-    if not function_call:
-        return {"error": "No valid function call found."}
-
-    function_name = function_call.get("name")
-    arguments = json.loads(function_call.get("arguments", "{}"))
-
-    if function_name == "format_file":
-        try:
-            format_file(arguments["install_command"], arguments["execute_command"])
-            return {"result": "done"}
-        except Exception as e:
-            return {"error": str(e)}
-
-    return {"error": "Function not supported."}
+        res = {
+            "function_name": function_name,
+        }
+        for key, value in arguments.items():
+            res[key] = value
+        
+        execute_tool(function_name, arguments)
+  
+    return {}
 
 @app.get("/read")
 async def read(path: str):
@@ -78,4 +76,4 @@ async def read(path: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
