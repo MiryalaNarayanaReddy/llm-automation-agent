@@ -10,6 +10,7 @@ AIPROXY_TOKEN = os.environ.get("AIPROXY_TOKEN")
 if not AIPROXY_TOKEN:
     raise ValueError("AIPROXY_TOKEN is not set. Please set it as an environment variable.")
 
+
 print(f"Using AI Proxy Token: {AIPROXY_TOKEN[:5]}*****")  # Masked for security
 
 # Initialize FastAPI app
@@ -97,6 +98,8 @@ async def read(path: str):
 
     # return {"content": open(x).read()}
     return {"content": path}
+
+# cat ./data/dates.txt | while read date; do if [[ $(date -d "$date" +%A) == "Wednesday" ]]; then echo "$date"; fi done | wc -l > ./data/dates-wednesdays.txt
 
 if __name__ == "__main__":
     import uvicorn

@@ -7,14 +7,18 @@ def execute_bash_commands(commands: list[str]):
             subprocess.run(command, shell=True, check=True)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Bash command failed: {command}\nError: {str(e)}")
+        
+def execute_python_code_from_file(python_code: list[str], filename: str = "temp_script.py"):
+    """Write Python code to a file and execute it."""
+    with open(filename, "w") as f:
+        f.write("\n".join(python_code))
 
-def execute_python_code(code_snippets: list[str]):
-    """Execute a list of Python code snippets and handle errors."""
-    for code in code_snippets:
-        try:
-            exec(code)
-        except Exception as e:
-            raise RuntimeError(f"Python execution failed:\n{code}\nError: {str(e)}")
+    try:
+        import subprocess
+        subprocess.run(["python", filename], check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Python execution failed with error:\n{e}")
+
 
 def execute_all(bash_commands: list[str], python_codes: list[str]):
     """Run bash commands first, then execute Python code and scripts, and verify success."""
@@ -22,15 +26,8 @@ def execute_all(bash_commands: list[str], python_codes: list[str]):
         if bash_commands:
             execute_bash_commands(bash_commands)
         if python_codes:
-            execute_python_code(python_codes)
+            execute_python_code_from_file(python_codes)
 
         print("All commands executed successfully.")
     except RuntimeError as e:
         print(f"Execution failed:\n{e}")
-
-# # Example usage:
-# bash_cmds = ["echo 'Hello from Bash'", "ls"]
-# python_snippets = ["print('Hello from Python')", "x = 42"]
-# python_scripts = ["script1.py", "script2.py"]
-
-# execute_all(bash_cmds, python_snippets, python_scripts)
