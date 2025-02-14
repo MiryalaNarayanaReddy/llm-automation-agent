@@ -165,3 +165,39 @@ def extract_recent_log_lines(logs_directory, output_path, num_files=10, line_num
         return 400
 
 
+def generate_markdown_index(docs_directory, output_path):
+    '''
+    Finds all Markdown (`.md`) files in a directory and extracts the first occurrence of each H1.
+    Creates an index file mapping filenames (relative to docs_directory) to their titles.
+
+    Args:
+        docs_directory (str): The directory containing Markdown files.
+        output_path (str): The path to the output JSON file.
+
+    Returns:
+        int: 200 if successful, 400 otherwise.
+    '''
+    try:
+        index = {}
+        docs_directory = os.path.abspath(docs_directory)
+        
+        for root, _, files in os.walk(docs_directory):
+            for file in files:
+                if file.endswith(".md"):
+                    file_path = os.path.abspath(os.path.join(root, file))
+                    rel_path = os.path.relpath(file_path, docs_directory)
+                    
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        for line in f:
+                            if line.startswith("# "):
+                                index[rel_path] = line[2:].strip()
+                                break
+        
+        output_path = os.path.abspath(output_path)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(index, f, indent=4)
+        
+        return 200
+    except Exception as e:
+        print(f"Error generating index: {e}")
+        return 400

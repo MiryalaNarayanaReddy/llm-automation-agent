@@ -116,7 +116,27 @@ TOOLS = [
             "required": ["logs_directory", "output_path", "num_files", "line_number"],
             "additionalProperties": False
         }
-    }
+    },
+    {
+        "name": "generate_markdown_index",
+        "description":  "Finds all Markdown (`.md`) files in a directory and extracts the first occurrence of each H1. Creates an index file mapping filenames to their titles.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "docs_directory": {
+                    "type": "string",
+                    "description": "The directory containing Markdown files."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output JSON file."
+                }
+            },
+            "required": ["docs_directory", "output_path"],
+            "additionalProperties": False
+        }
+    },
+
 ]
 
     # {

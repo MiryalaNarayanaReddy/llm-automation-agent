@@ -3,6 +3,7 @@ from tasks.phaseA import download_datagen
 from tasks.phaseA import count_week_days
 from tasks.phaseA import sort_json_array
 from tasks.phaseA import extract_recent_log_lines
+from tasks.phaseA import generate_markdown_index
 
 import json
 
@@ -26,6 +27,9 @@ def execute_task(name, args):
 
     elif name == "extract_recent_log_lines":    
         extract_recent_log_lines(logs_directory=args["logs_directory"], output_path=args["output_path"], num_files=args["num_files"], line_number=args["line_number"])  
+    
+    elif name == "generate_markdown_index":
+        generate_markdown_index(docs_directory=args["docs_directory"], output_path=args["output_path"])
 
     else:
         print("Function not found")
