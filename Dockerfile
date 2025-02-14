@@ -16,6 +16,9 @@ WORKDIR /
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# make data directory with write permissions
+RUN mkdir -p /data
+
 # Copy application code
 COPY .  .
 

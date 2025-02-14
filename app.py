@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException
 from task_execute import execute_task
 from dotenv import load_dotenv
 
+
 # Load variables from .env file
 load_dotenv()
 
@@ -67,12 +68,11 @@ def run_task(task: str):
         function_call = result["choices"][0]["message"]["function_call"]
 
         if function_call:
-            print("function_call", function_call)
+
             function_name = function_call["name"]
             arguments = function_call["arguments"]
-            execute_task(function_name, arguments)
-
-
+            args = json.loads(arguments)  
+            execute_task(function_name, args)
 
         return {"status": "success", "output": result}
     except ValueError as e:
@@ -80,60 +80,13 @@ def run_task(task: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
 
-
-
-# {
-#   "status": "success",
-#   "output": {
-#     "id": "chatcmpl-B0ppJqHxmYmsCG5EI2prpHlYlwRDZ",
-#     "object": "chat.completion",
-#     "created": 1739538921,
-#     "model": "gpt-4o-mini-2024-07-18",
-#     "choices": [
-#       {
-#         "index": 0,
-#         "message": {
-#           "role": "assistant",
-#           "content": null,
-#           "function_call": {
-#             "name": "format_readme",
-#             "arguments": "{\"path\":\"./data/format.md\",\"prettier_package\":\"prettier@3.4.2\"}"
-#           },
-#           "refusal": null
-#         },
-#         "logprobs": null,
-#         "finish_reason": "function_call"
-#       }
-#     ],
-#     "usage": {
-#       "prompt_tokens": 291,
-#       "completion_tokens": 35,
-#       "total_tokens": 326,
-#       "prompt_tokens_details": {
-#         "cached_tokens": 0,
-#         "audio_tokens": 0
-#       },
-#       "completion_tokens_details": {
-#         "reasoning_tokens": 0,
-#         "audio_tokens": 0,
-#         "accepted_prediction_tokens": 0,
-#         "rejected_prediction_tokens": 0
-#       }
-#     },
-#     "service_tier": "default",
-#     "system_fingerprint": "fp_00428b782a",
-#     "monthlyCost": 0.014232000000000002,
-#     "cost": 0.001083,
-#     "monthlyRequests": 35
-#   }
-# }
-
 @app.get("/read")
 def read_file_endpoint(path: str):
-    content = read_file(path)
+    with open(path, "r") as f:
+        content = f.read()
     if content is None:
         raise HTTPException(status_code=404, detail="File not found")
-    return {"content": content}
+    return content
 
 
 if __name__ == "__main__":

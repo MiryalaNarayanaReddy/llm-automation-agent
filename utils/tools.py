@@ -1,6 +1,26 @@
 
 TOOLS = [
     {
+        "name": "data_generation_task",
+        "description":  "Download datagen and generate data for project",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {    
+                    "type": "string",
+                    "description": "The url to download datagen and generate data for project"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "The email to passed as argument to datagen.py"
+                }
+            },
+            "required": ["url", "email"],
+            "additionalProperties": False   
+        }
+
+    },
+    {
         "name": "format_readme",
         "description":  "Formats the given file using the given prettier package.",
         "parameters": {
