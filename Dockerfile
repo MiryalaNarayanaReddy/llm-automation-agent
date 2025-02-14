@@ -1,21 +1,30 @@
-# Use an official Python image as a base
-FROM python:3.11-slim
+FROM python:3.12-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+ENV PATH="/root/.local/bin/:$PATH"
+
 
 # Install Node.js
 RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /app
+WORKDIR / 
 
 # Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY . .
+COPY .  .
 
 # Expose necessary ports
-EXPOSE 8000  # For FastAPI
+EXPOSE 8000  
 
 # Start the backend server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# CMD ["cd","app"]
+# CMD ["uv","run","app.py"]
+
+CMD ["uv","run","app.py"]

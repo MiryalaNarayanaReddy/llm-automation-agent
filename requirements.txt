@@ -5,3 +5,4 @@ faker
 requests
 pandas 
 numpy
+python-dotenv
