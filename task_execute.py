@@ -15,6 +15,7 @@ from tasks.phaseB import deleteFile
 # from tasks.phaseB import fetchDataAndSave
 # from tasks.phaseB import cloneRepoAndCommit
 # from tasks.phaseB import runSqlQuery
+from tasks.phaseB import transcribe_audio
 
 from utils.execute_tool import execute_all
 import json
@@ -100,6 +101,13 @@ def execute_task(name, args, llm=None, llm_for_phaseB=None):
             # resource not allowed status code 403            
             return 403, f"Resource not allowed: {args['path']}. Anyway delete is not allowed if the file is in /data directory"
 
+    elif name == "transcribe_audio":
+        if checkIsSafe(args["input_path"]):
+            return transcribe_audio(llm=llm, input_path=args["input_path"], output_path=args["output_path"])
+        else:
+            # resource not allowed status code 403            
+            return 403, f"Resource not allowed: {args['input_path']}"   
+    
     elif name == "phaseB_task":
         print("phaseB_task")
 

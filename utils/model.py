@@ -124,3 +124,32 @@ class LLMModel:
         response = requests.post(url=url, headers=headers, json=payload, verify=False)
 
         return response.json()  
+    
+    def transcribeAudio(self, file_path):
+        url = f"{self.base_url}/openai/v1/audio/transcriptions"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        files = {"file": open(file_path, "rb")}
+        data = {"model": "whisper-1"}
+        response = requests.post(url, headers=headers, files=files, data=data)
+        return response.json()
+    
+    def parseTranscription(self, transcription_response):
+        parsed_data = {
+            "task": transcription_response.get("task", ""),
+            "language": transcription_response.get("language", ""),
+            "duration": transcription_response.get("duration", 0),
+            "text": transcription_response.get("text", ""),
+            "segments": [
+                {
+                    "start": segment.get("start", 0),
+                    "end": segment.get("end", 0),
+                    "text": segment.get("text", "")
+                } for segment in transcription_response.get("segments", [])
+            ],
+            "request_id": transcription_response.get("x_groq", {}).get("id", "")
+        }
+        
+        # get transcription text
+        transcription_text = parsed_data["text"]
+
+        return transcription_text

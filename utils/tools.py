@@ -255,7 +255,27 @@ TOOLS = [
             "additionalProperties": False
           
         }   
-    }   
+    },
+    {
+        "name": "transcribe_audio",
+        "description":  "Transcribes an audio file and writes the result to an output file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "input_path": {
+                    "type": "string",
+                    "description": "The path to the input file containing the audio."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the transcription will be written."
+                }
+            },
+            "required": ["input_path", "output_path"],
+            "additionalProperties": False
+        }
+    }
+
 
 ]
 PHASE_B_TOOLS = [

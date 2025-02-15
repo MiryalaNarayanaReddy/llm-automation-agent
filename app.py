@@ -119,4 +119,4 @@ if __name__ == "__main__":
     # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
 
 
-# cat ./data/dates.txt | while read date; do if [[ $(date -d "$date" +%A) == "Wednesday" ]]; then echo "$date"; fi done | wc -l > ./data/dates-wednesdays.txt
+

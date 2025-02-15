@@ -1,4 +1,5 @@
 import os
+import json
 
 
 def checkIsSafe(filepath: str) -> bool:
@@ -94,6 +95,21 @@ def deleteFile(filepath: str) -> bool:
 # B7. Compress or resize an image
 
 # B8. Transcribe audio from an MP3 file
+
+
+def transcribe_audio(llm, input_path: str, output_path: str) -> bool:
+    try:
+        # Transcribe audio from an MP3 file
+        transcription_response = llm.transcribeAudio(input_path)
+        parsed_text = llm.parseTranscription(transcription_response)
+
+        with open(output_path, "w") as f:
+            f.write(parsed_text)
+
+        return 200, f"Transcribed audio: {output_path}"
+    except Exception as e:
+        # print(f"Error transcribing audio: {e}")
+        return 400, f"Error transcribing audio: {e}"    
 
 # B9. Convert Markdown to HTML
 
