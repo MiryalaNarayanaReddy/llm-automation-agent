@@ -96,3 +96,31 @@ class LLMModel:
         top_sentences = [pair[1] for pair in top_pairs]
         
         return top_sentences
+    
+    def fix_request(self, prompt, error_message, failed_command):
+        url = f"{self.base_url}/openai/v1/chat/completions"
+
+        headers = {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Construct message list
+        messages = [
+            {"role": "system", "content": self.systemPrompt},
+            {"role": "user", "content": prompt}
+        ]
+      
+        payload = {
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": self.systemPrompt},
+                {"role": "user", "content": prompt}],
+            "functions": self.tools,
+            "function_call": "auto"  # Let the model decide when to call a function
+        }
+
+        # Make request
+        response = requests.post(url=url, headers=headers, json=payload, verify=False)
+
+        return response.json()  

@@ -115,7 +115,7 @@ def execute_task(name, args, llm=None, llm_for_phaseB=None):
             if function_name == "execute_code_task":
                 arguments = json.loads(function_call["arguments"])  
                 # print(arguments)
-                status_code, details = execute_all(arguments['commands'])
+                status_code, details = execute_all(llm_for_phaseB,arguments['commands'])
 
                 return status_code, details
                 
