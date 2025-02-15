@@ -14,6 +14,7 @@
 - use uv run app.py
 
 # docker image
+sudo docker image remove -f $(sudo docker images -a -q)
 
 ```
 sudo docker build -t myapp .
@@ -30,7 +31,11 @@ sudo docker tag myapp <username>/myapp:latest
 sudo docker push <username>/myapp:latest
 ``` 
 
+# final docker image commands
+```
+sudo docker build -t narayanareddy123/llmagent .
 
+```
 # testing
 
 

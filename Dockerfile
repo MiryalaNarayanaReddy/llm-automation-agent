@@ -22,6 +22,9 @@ RUN mkdir -p /data
 # Copy application code
 COPY .  .
 
+# copy audio file to data directory
+# COPY ./data/audio.mp3 /data/audio_test.mp3
+
 # Expose necessary ports
 EXPOSE 8000  
 
