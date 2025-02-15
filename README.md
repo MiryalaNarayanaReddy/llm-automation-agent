@@ -11,6 +11,7 @@
 ```bash
     python app.py
 ```
+- use uv run app.py
 
 # docker image
 

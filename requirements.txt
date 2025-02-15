@@ -3,3 +3,6 @@ uvicorn
 pillow
 faker
 requests
+pandas 
+numpy
+python-dotenv

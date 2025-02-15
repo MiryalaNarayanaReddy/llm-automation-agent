@@ -2,3 +2,6 @@ node_modules
 __pycache__
 .pytest_cache
 data
+.env
+package-lock.json
+package.json
