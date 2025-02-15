@@ -261,15 +261,23 @@ def extract_credit_card_number(llm, system_prompt, user_prompt, input_path="/dat
         return 400, f"Error extracting credit card number: {e}"
 
 def get_most_similar_comments(llm, input_path="/data/comments.txt", output_path="/data/comments-similar.txt", top_n=2):
-    with open(input_path, "r", encoding="utf-8") as f:
-        data = [line.strip() for line in f.readlines() if line.strip()]
+   
+    try: 
+        with open(input_path, "r", encoding="utf-8") as f:
+            data = [line.strip() for line in f.readlines() if line.strip()]
 
-    top_n_similar_sentences = llm.getMostSimilarDocs( data, n=top_n)
+        top_n_similar_sentences = llm.getMostSimilarDocs( data, n=top_n)
     
-    # write each value to a new line
-    with open(output_path, "w", encoding="utf-8") as f:
-        for pair in top_n_similar_sentences:
-            f.write(f"{pair}\n")
+        # write each value to a new line
+        with open(output_path, "w", encoding="utf-8") as f:
+            for doc in top_n_similar_sentences:
+                f.write(f"{doc}\n")
+            
+        return 200, f"Extracted {len(top_n_similar_sentences)} most similar comments: {output_path}"
+    
+    except Exception as e:
+        # print(f"Error extracting credit card number: {e}")
+        return 400, f"Error extracting credit card number: {e}"
 
 def total_gold_ticket_sales(db_path="/data/ticket-sales.db", output_path="/data/ticket-sales-gold.txt"):
     try:

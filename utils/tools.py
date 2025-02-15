@@ -145,7 +145,7 @@ TOOLS = [
             "properties": {
                 "system_message": {
                     "type": "string",
-                    "description": "The system message to use for the task explaining the task to the LLM."
+                    "description": "The system message to use for the task explaining the task to the LLM. Ask it to return only the the thing asked in task and nothing else."
                 },
                 "input_path": {
                     "type": "string",
@@ -207,7 +207,7 @@ TOOLS = [
                 },
                 "top_n": {
                     "type": "integer",
-                    "description": "The number of most similar comments to return."
+                    "description": "The number of most similar comments to return. default 2"
                 }
             },
             "required": ["input_path", "output_path", "top_n"],
