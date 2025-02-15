@@ -263,20 +263,11 @@ PHASE_B_TOOLS = [
         "name": "execute_code_task",
         "description": '''
         Executes a list of Bash commands, Python code snippets, and Python scripts sequentially. 
-        - Bash commands may involve `npx`, wget but no sudo or ubuntu specific or downloading if necessary. 
+        - Bash commands may involve `npx`, wget.
+        - if anything is to be install do not use sudo instead use something like "apt-get update && apt-get install -y pandoc"
         - Python code snippets are written to a file and executed using `uv`.
-        Expected output format:
-        [
-            {
-                "type": "bash_commands",
-                "output": "output of the bash command"
-            },
-            {
-                "type": "python_code",
-                "output": "output of the python code"
-            },
-            ...
-        ]
+        return function tools format 
+        
         ''',
         "parameters": {
             "type": "object",

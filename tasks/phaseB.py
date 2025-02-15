@@ -1,7 +1,4 @@
 import os
-import requests
-import subprocess
-import sqlite3
 
 
 def checkIsSafe(filepath: str) -> bool:
