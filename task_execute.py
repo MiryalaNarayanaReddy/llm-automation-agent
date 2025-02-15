@@ -15,6 +15,7 @@ from tasks.phaseB import deleteFile
 # from tasks.phaseB import fetchDataAndSave
 # from tasks.phaseB import cloneRepoAndCommit
 # from tasks.phaseB import runSqlQuery
+# from tasks.phaseB import compress_image
 from tasks.phaseB import transcribe_audio
 
 from utils.execute_tool import execute_all
@@ -100,6 +101,13 @@ def execute_task(name, args, llm=None, llm_for_phaseB=None):
         else:
             # resource not allowed status code 403            
             return 403, f"Resource not allowed: {args['path']}. Anyway delete is not allowed if the file is in /data directory"
+        
+    # elif name == "compress_image":
+    #     if checkIsSafe(args["input_path"]) and checkIsSafe(args["output_path"]):
+    #         return compress_image(input_path=args["input_path"], output_path=args["output_path"])
+    #     else:
+    #         # resource not allowed status code 403            
+    #         return 403, f"Resource not allowed: {args['input_path']} or {args['output_path']}"
 
     elif name == "transcribe_audio":
         if checkIsSafe(args["input_path"]):

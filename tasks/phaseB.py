@@ -1,6 +1,7 @@
 import os
 import json
-
+from pathlib import Path
+from PIL import Image
 
 def checkIsSafe(filepath: str) -> bool:
     abs_path = os.path.abspath(filepath)
@@ -94,6 +95,29 @@ def deleteFile(filepath: str) -> bool:
 # B6. Extract data from (i.e. scrape) a website
 # B7. Compress or resize an image
 
+def compress_image(input_path: str, output_path: str) -> bool:
+    try:
+        async def compress_image(input_path: Path, output_path: Path, quality: int = 85) -> None:
+            """Compress an image while maintaining reasonable quality."""
+            with Image.open(input_path) as img:
+                # Convert RGBA to RGB if needed
+                if img.mode == 'RGBA':
+                    img = img.convert('RGB')
+                # Optimize for web
+                img.save(output_path, 'WEBP', quality=quality, optimize=True)
+
+
+        with open(input_path, "rb") as f:
+            image_data = f.read()
+            
+        compress_image(input_path=Path(input_path), output_path=Path(output_path))
+
+        return 200, f"Compressed image: {output_path}"  
+
+    except Exception as e:
+        # print(f"Error compressing image: {e}")
+        return 400, f"Error compressing image: {e}"
+        
 # B8. Transcribe audio from an MP3 file
 
 
