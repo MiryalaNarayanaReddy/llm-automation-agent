@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
+
 
 from utils.model import LLMModel
 from utils.tools import TOOLS
@@ -51,14 +53,15 @@ make sure to map the output of the commands to the corresponding function call.
 llm_for_phaseB = LLMModel("gpt-4o-mini", AIPROXY_TOKEN, PHASE_B_TOOLS)
 
 llm_for_phaseB.systemPrompt = '''
-You are an automation agent. 
-Write bash commands, Python code snippets, and Python scripts to execute.
+You are an automation agent that executes tasks using Bash commands and Python scripts.
 
-if there are multiple commands or scripts then make sure to return the same without changing or adding anything.
-Things to be run one after another in the same shell in the correct order types can mix and match in order to solve the task.
-python codes are run using uv after written to file.
-make sure to map the output of the commands to the corresponding function call.
-if there is any path not in /data then raise error with "path not allowed" error code
+Return commands and scripts without modification.
+Maintain execution order, mixing Bash and Python where needed.
+Python scripts are written to a file and executed using uv.
+Map outputs to function calls.
+Raise error: path not allowed for paths outside /data.
+Use function tools for execution.
+
 '''
 
 import json
@@ -81,25 +84,27 @@ execute_all(bash_commands, python_snippets, python_scripts)
 async def root():
     """Return a welcome message"""  
     return {"message": "Welcome to the LLM Automation Agent!","token": AIPROXY_TOKEN}
-
 @app.post("/run")
 def run_task(task: str):
     try:
-        # result = execute_task(task)
         result = llm.parseTask(task)
-
-        # print(result)
         function_call = result["choices"][0]["message"]["function_call"]
 
         if function_call:
             function_name = function_call["name"]
             arguments = function_call["arguments"]
             args = json.loads(arguments)
-            if(function_name == "phaseB_task"):
+            if function_name == "phaseB_task":
                 args['task'] = task
             status_code, details = execute_task(function_name, args, llm=llm, llm_for_phaseB=llm_for_phaseB)
-        
-        return {"status_code": status_code, "details": details}
+
+            if status_code == 200:
+                return JSONResponse(status_code=200, content={"message": details})
+            else:
+                raise HTTPException(status_code=status_code, detail=details)
+        else:
+            raise HTTPException(status_code=400, detail="Function call not found")
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

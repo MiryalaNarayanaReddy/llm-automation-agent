@@ -248,22 +248,9 @@ TOOLS = [
             "additionalProperties": False
         }
     },
-
-    {
-        "name": "phaseB_task",  
-        "description": "if any task is not matching then use this task",
-        "parameters": {
-            "type": "object",
-            "properties": {
-            },    
-            "required": [],
-            "additionalProperties": False
-          
-        }   
-    },
     {
         "name": "scrape_website",
-        "description":  "Scrapes a website by getting website using requests and sending request to llm with website html and writes the result to an output file.",
+        "description":  "This is used only when scraping websites not for fetaching data. Scrapes a website by getting website using requests and sending request to llm with website html and writes the result to an output file. Do no use this if API end point is given to fetch data",
         "parameters": {
             "type": "object",
             "properties": {
@@ -302,10 +289,35 @@ TOOLS = [
             "required": ["input_path", "output_path"],
             "additionalProperties": False
         }
-    }
-
-
+    },
+     {
+        "name": "phaseB_task",  
+        "description": '''
+        if any task is not matching then use this task
+        example tasks:
+        1. Fetch data from API and save it to a file
+        2. Clone a git repo and make a commit
+        3. Run a SQL query on a SQLite or DuckDB database
+        5. Compress or resize an image
+        6. Transcribe audio from an MP3 file
+        7. Convert Markdown to HTML
+        8. Write an API endpoint that filters a CSV file and returns JSON data
+        ''',
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "task": {
+                    "type": "string",
+                    "description": "The task to be executed"
+                }
+            },    
+            "required": ["task"],
+            "additionalProperties": False
+          
+        }   
+    },
 ]
+
 PHASE_B_TOOLS = [
     {
         "name": "execute_code_task",
@@ -314,8 +326,6 @@ PHASE_B_TOOLS = [
         - Bash commands may involve `npx`, wget.
         - if anything is to be install do not use sudo instead use something like "apt-get update && apt-get install -y pandoc"
         - Python code snippets are written to a file and executed using `uv`.
-        return function tools format 
-        
         ''',
         "parameters": {
             "type": "object",
@@ -349,24 +359,6 @@ PHASE_B_TOOLS = [
             "required": ["commands"],
             "additionalProperties": False
         },
-        "returns": {
-            "type": "array",
-            "description": "List of executed commands and code snippets with their outputs.",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": ["bash_commands", "python_code", "python_script"],
-                        "description": "Type of command executed."
-                    },
-                    "output": {
-                        "type": "string",
-                        "description": "Output of the executed command or script."
-                    }
-                },
-                "required": ["type", "output"]
-            }
-        }
+        
     }
 ]
