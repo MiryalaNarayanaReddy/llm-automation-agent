@@ -6,7 +6,7 @@ import json
 import os 
 import sqlite3
 import base64
-from io import BytesIO
+
 
 def download_datagen(url, email):
     '''
@@ -222,14 +222,25 @@ def extract_email_sender(llm, system_message, input_path="/data/email.txt", outp
         print(f"Error extracting email sender: {e}")
         return 400
 
-def extract_credit_card_number(llm, system_message,  input_path="/data/credit-card.png", output_path="/data/credit-card.txt"):
+def encode_image(image_path):
+    """Encodes an image as Base64."""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+
+def extract_credit_card_number(llm, system_message, input_path="/data/credit-card.png", output_path="/data/credit-card.txt"):
     try:
-        # Open and encode image in base64
-        with open(input_path, "rb") as image_file:
-            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+        # Encode image to Base64
+        base64_image = encode_image(input_path)
 
-        response = llm.getResponse(system_message,"Extract the credit card number from the following image (Base64 encoded):", base64_image)
+        # Send request to LLM
+        response = llm.getResponse(
+            system_message,
+            "Extract the credit card number from the following image:",
+            base64_image=base64_image
+        )
 
+        # Extract and clean the credit card number
         card_number = response["choices"][0]["message"]["content"].replace(" ", "").strip()
 
         # Save extracted card number
