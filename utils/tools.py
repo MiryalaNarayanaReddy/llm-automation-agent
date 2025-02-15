@@ -2,7 +2,7 @@
 TOOLS = [
     {
         "name": "data_generation_task",
-        "description":  "Download datagen and generate data for project",
+        "description":  "Download datagen.py and generate data for project requires email argument",
         "parameters": {
             "type": "object",
             "properties": {
@@ -12,7 +12,7 @@ TOOLS = [
                 },
                 "email": {
                     "type": "string",
-                    "description": "The email to passed as argument to datagen.py"
+                    "description": "The email passed as argument to datagen.py"
                 }
             },
             "required": ["url", "email"],
@@ -227,35 +227,141 @@ TOOLS = [
             "required": ["db_path", "output_path"],
             "additionalProperties": False
         }
+    },
+    {
+        "name": "delete_file",
+        "description":  "Deletes a file from the given path.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "The path to the file to delete."
+                }
+            },
+            "required": ["path"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "name": "phaseB_task",  
+        "description": "if any task is not matching then use this task",
+        "parameters": {
+            "type": "object",
+            "properties": {
+            },    
+            "required": [],
+            "additionalProperties": False
+          
+        }   
+    },
+    {
+        "name": "scrape_website",
+        "description":  "Scrapes a website by getting website using requests and sending request to llm with website html and writes the result to an output file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the website to scrape."
+                },
+                "system_prompt": {
+                    "type": "string",
+                    "description": "The system prompt describing the task to be performed on the website."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the scraped data will be written."
+                }
+            },
+            "required": ["url", "system_prompt", "output_path"],
+            "additionalProperties": False
+        }   
+    },
+    {
+        "name": "transcribe_audio",
+        "description":  "Transcribes an audio file and writes the result to an output file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "input_path": {
+                    "type": "string",
+                    "description": "The path to the input file containing the audio."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the transcription will be written."
+                }
+            },
+            "required": ["input_path", "output_path"],
+            "additionalProperties": False
+        }
     }
 
-]
 
-    # {
-    #   "name": "execute_all",
-    #   "description": "Executes a list of bash commands, Python code snippets, and Python scripts.",
-    #   "parameters": {
-    #     "type": "object",
-    #     "properties": {
-    #       "bash_commands": {
-    #         "type": "array",
-    #         "description": "List of bash commands to execute.",
-    #         "items": {
-    #           "type": "string",
-    #           "description": "A bash command to execute."
-    #         }
-    #       },
-    #       "python_codes": {
-    #         "type": "array",
-    #         "description": "List of Python code snippets to execute.",
-    #         "items": {
-    #           "type": "string",
-    #           "description": "A Python code snippet to execute."
-    #         }
-    #       },
-    #     },
-    #     "required": ["bash_commands", "python_snippets", "python_scripts"],
-    #     "additionalProperties": False
-    #   }
-    # }
-    
+]
+PHASE_B_TOOLS = [
+    {
+        "name": "execute_code_task",
+        "description": '''
+        Executes a list of Bash commands, Python code snippets, and Python scripts sequentially. 
+        - Bash commands may involve `npx`, wget.
+        - if anything is to be install do not use sudo instead use something like "apt-get update && apt-get install -y pandoc"
+        - Python code snippets are written to a file and executed using `uv`.
+        return function tools format 
+        
+        ''',
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "commands": {
+                    "type": "array",
+                    "description": "List of commands to execute in order.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["bash_commands", "python_code", "python_script"],
+                                "description": "The type of command being executed."
+                            },
+                            "cmd": {
+                                "type": "string",
+                                "description": "A Bash command to execute.",
+                                "nullable": True
+                            },
+                            "code": {
+                                "type": "string",
+                                "description": "Python code or script to execute.",
+                                "nullable": True
+                            }
+                        },
+                        "required": ["type"]
+                    }
+                }
+            },
+            "required": ["commands"],
+            "additionalProperties": False
+        },
+        "returns": {
+            "type": "array",
+            "description": "List of executed commands and code snippets with their outputs.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["bash_commands", "python_code", "python_script"],
+                        "description": "Type of command executed."
+                    },
+                    "output": {
+                        "type": "string",
+                        "description": "Output of the executed command or script."
+                    }
+                },
+                "required": ["type", "output"]
+            }
+        }
+    }
+]

@@ -20,7 +20,9 @@ sudo docker build -t myapp .
 sudo docker run -p 8000:8000 -e AIPROXY_TOKEN="your-secret-token" myapp
 ```
 
-
+```
+sudo docker exec -it <container-id> bash
+```
 # push image to dockerhub
 ```
 sudo docker login
