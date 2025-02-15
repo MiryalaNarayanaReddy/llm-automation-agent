@@ -235,8 +235,8 @@ def extract_credit_card_number(llm, system_message, input_path="/data/credit-car
 
         # Send request to LLM
         response = llm.getResponse(
+            "Extract the numerical text from the image without spaces.",
             system_message,
-            "Extract the credit card number from the following image:",
             base64_image=base64_image
         )
 
@@ -251,6 +251,17 @@ def extract_credit_card_number(llm, system_message, input_path="/data/credit-car
     except Exception as e:
         print(f"Error extracting credit card number: {e}")
         return 400
+
+def get_most_similar_comments(llm, input_path="/data/comments.txt", output_path="/data/comments-similar.txt", top_n=2):
+    with open(input_path, "r", encoding="utf-8") as f:
+        data = [line.strip() for line in f.readlines() if line.strip()]
+
+    top_n_similar_sentences = llm.getMostSimilarDocs( data, n=top_n)
+    
+    # write each value to a new line
+    with open(output_path, "w", encoding="utf-8") as f:
+        for pair in top_n_similar_sentences:
+            f.write(f"{pair}\n")
 
 def total_gold_ticket_sales(db_path="/data/ticket-sales.db", output_path="/data/ticket-sales-gold.txt"):
     try:

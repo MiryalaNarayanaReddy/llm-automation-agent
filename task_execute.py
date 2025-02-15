@@ -7,6 +7,7 @@ from tasks.phaseA import generate_markdown_index
 
 from tasks.phaseA import extract_email_sender
 from tasks.phaseA import extract_credit_card_number
+from tasks.phaseA import get_most_similar_comments
 from tasks.phaseA import total_gold_ticket_sales
 
 import json
@@ -40,6 +41,9 @@ def execute_task(name, args, llm=None):
 
     elif name == "extract_credit_card_number":
         extract_credit_card_number(llm=llm, system_message=args["system_message"], input_path=args["input_path"], output_path=args["output_path"])
+
+    elif name == "get_most_similar_comments":    
+        get_most_similar_comments(llm=llm, input_path=args["input_path"], output_path=args["output_path"], top_n=args["top_n"])
 
     elif name == "total_gold_ticket_sales":
         total_gold_ticket_sales(db_path=args["db_path"], output_path=args["output_path"])
