@@ -258,32 +258,76 @@ TOOLS = [
     }   
 
 ]
-
-# {
-#       "name": "execute_bash_code_based_task",
-#       "description": "Executes a list of bash commands (involve npx , downloading if  necessary) , Python code snippets, and Python scripts we are using uv to run the code.",
-#       "parameters": {
-#         "type": "object",
-#         "properties": {
-#           "bash_commands": {
-#             "type": "array",
-#             "description": "List of bash commands to execute.",
-#             "items": {
-#               "type": "string",
-#               "description": "A bash command to execute."
-#             }
-#           },
-#           "python_codes": {
-#             "type": "array",
-#             "description": "List of Python code snippets to execute.",
-#             "items": {
-#               "type": "string",
-#               "description": "A Python code snippet to execute."
-#             }
-#           },
-#         },
-#         "required": ["bash_commands", "python_snippets", "python_scripts"],
-#         "additionalProperties": False
-#       }
-#     }
-    
+PHASE_B_TOOLS = [
+    {
+        "name": "execute_code_task",
+        "description": '''
+        Executes a list of Bash commands, Python code snippets, and Python scripts sequentially. 
+        - Bash commands may involve `npx` or downloading if necessary. 
+        - Python code snippets are written to a file and executed using `uv`.
+        Expected output format:
+        [
+            {
+                "type": "bash_commands",
+                "output": "output of the bash command"
+            },
+            {
+                "type": "python_code",
+                "output": "output of the python code"
+            },
+            ...
+        ]
+        ''',
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "commands": {
+                    "type": "array",
+                    "description": "List of commands to execute in order.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["bash_commands", "python_code", "python_script"],
+                                "description": "The type of command being executed."
+                            },
+                            "cmd": {
+                                "type": "string",
+                                "description": "A Bash command to execute.",
+                                "nullable": True
+                            },
+                            "code": {
+                                "type": "string",
+                                "description": "Python code or script to execute.",
+                                "nullable": True
+                            }
+                        },
+                        "required": ["type"]
+                    }
+                }
+            },
+            "required": ["commands"],
+            "additionalProperties": False
+        },
+        "returns": {
+            "type": "array",
+            "description": "List of executed commands and code snippets with their outputs.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["bash_commands", "python_code", "python_script"],
+                        "description": "Type of command executed."
+                    },
+                    "output": {
+                        "type": "string",
+                        "description": "Output of the executed command or script."
+                    }
+                },
+                "required": ["type", "output"]
+            }
+        }
+    }
+]

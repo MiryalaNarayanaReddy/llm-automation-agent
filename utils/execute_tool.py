@@ -1,33 +1,50 @@
 import subprocess
+import json
 
-def execute_bash_commands(commands: list[str]):
-    """Execute a list of bash commands and handle errors."""
-    for command in commands:
-        try:
-            subprocess.run(command, shell=True, check=True)
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Bash command failed: {command}\nError: {str(e)}")
-        
-def execute_python_code_from_file(python_code: list[str], filename: str = "temp_script.py"):
-    """Write Python code to a file and execute it."""
-    with open(filename, "w") as f:
-        f.write("\n".join(python_code))
-
+def execute_bash_command(command: str):
+    """Execute a bash command and capture its output."""
     try:
-        import subprocess
-        subprocess.run(["python", filename], check=True)
+        result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+        return {"type": "bash_commands", "output": result.stdout.strip() or "Success"}
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Python execution failed with error:\n{e}")
+        return {"type": "bash_commands", "output": f"Error: {e.stderr.strip()}"}
 
+def execute_python_code(python_code: str, filename: str = "temp_script.py"):
+    """Write Python code to a file and execute it using uv."""
+    with open(filename, "w") as f:
+        f.write(python_code)
 
-def execute_all(bash_commands: list[str], python_codes: list[str]):
-    """Run bash commands first, then execute Python code and scripts, and verify success."""
     try:
-        if bash_commands:
-            execute_bash_commands(bash_commands)
-        if python_codes:
-            execute_python_code_from_file(python_codes)
+        result = subprocess.run(["uv", "run", filename], check=True, capture_output=True, text=True)
+        return {"type": "python_code", "output": result.stdout.strip() or "Success"}
+    except subprocess.CalledProcessError as e:
+        return {"type": "python_code", "output": f"Error: {e.stderr.strip()}"}
 
-        print("All commands executed successfully.")
-    except RuntimeError as e:
-        print(f"Execution failed:\n{e}")
+def execute_all(commands: list[dict]):
+    """Execute a mix of Bash commands and Python code sequentially, capturing results."""
+    results = []
+
+    # print(commands)
+
+    try :
+        for command in commands:
+            if command["type"] == "bash_commands":
+                results.append(execute_bash_command(command["cmd"]))
+            elif command["type"] == "python_code":
+                results.append(execute_python_code(command["code"]))
+            elif command["type"] == "python_script":
+                results.append(execute_python_code(command["code"]))  # Same execution method for scripts
+
+        return 200, results
+    except Exception as e:
+        return 400, f"Error executing commands: {e}"
+
+# Example usage
+llm_response = [
+    {"type": "bash_commands", "cmd": "echo 'Hello from Bash'"},
+    {"type": "python_code", "code": "print('Hello from Python')"},
+    {"type": "python_script", "code": "import sys\nprint(f'Python version: {sys.version}')"}
+]
+
+result_json = execute_all(llm_response)
+print(result_json)

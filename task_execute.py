@@ -17,8 +17,9 @@ from tasks.phaseB import deleteFile
 # from tasks.phaseB import runSqlQuery
 
 from utils.execute_tool import execute_all
+import json
 
-def execute_task(name, args, llm=None):
+def execute_task(name, args, llm=None, llm_for_phaseB=None):
      
     print("------------------------------")
     print("name", name)
@@ -102,8 +103,27 @@ def execute_task(name, args, llm=None):
     elif name == "phaseB_task":
         print("phaseB_task")
 
-        # execute_all(bash_commands=args["bash_commands"], python_codes=args["python_codes"])
-        return 200, f"Executed all commands and scripts"
+         # result = execute_task(task)
+        result = llm_for_phaseB.parseTask(args["task"])
+        print(result)
+        function_call = result["choices"][0]["message"]["function_call"]
+
+        print(function_call)
+
+        if function_call:
+            function_name = function_call["name"]
+            if function_name == "execute_code_task":
+                arguments = json.loads(function_call["arguments"])  
+                # print(arguments)
+                status_code, details = execute_all(arguments['commands'])
+
+                return status_code, details
+                
+            else:
+                return 400, f"Function not found: {function_name}"
+        else:
+            return 400, f"Function call not found"
+    
     else:
         # print("Function not found")
         return 400, f"Function not found: {name}"

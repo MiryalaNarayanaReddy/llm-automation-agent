@@ -4,6 +4,8 @@ from fastapi import FastAPI, HTTPException
 
 from utils.model import LLMModel
 from utils.tools import TOOLS
+from utils.tools import PHASE_B_TOOLS
+
 
 from utils.execute_tool import execute_all
 from task_execute import execute_task
@@ -39,6 +41,25 @@ app.add_middleware(
 
 llm = LLMModel("gpt-4o-mini", AIPROXY_TOKEN, TOOLS)
 
+llm.systemPrompt = '''
+You are an automation agent. 
+If there are any paths then make sure to return the same without changing or adding anything.
+make sure to map the output of the commands to the corresponding function call.
+
+'''
+
+llm_for_phaseB = LLMModel("gpt-4o-mini", AIPROXY_TOKEN, PHASE_B_TOOLS)
+
+llm_for_phaseB.systemPrompt = '''
+You are an automation agent. 
+Write bash commands, Python code snippets, and Python scripts to execute.
+
+if there are multiple commands or scripts then make sure to return the same without changing or adding anything.
+Things to be run one after another in the same shell in the correct order types can mix and match in order to solve the task.
+python codes are run using uv after written to file.
+make sure to map the output of the commands to the corresponding function call.
+'''
+
 import json
 
 '''
@@ -66,19 +87,22 @@ def run_task(task: str):
         # result = execute_task(task)
         result = llm.parseTask(task)
 
+        # print(result)
         function_call = result["choices"][0]["message"]["function_call"]
 
         if function_call:
-
             function_name = function_call["name"]
             arguments = function_call["arguments"]
-            args = json.loads(arguments)  
-            status_code, details = execute_task(function_name, args, llm=llm)
+            args = json.loads(arguments)
+            if(function_name == "phaseB_task"):
+                args['task'] = task
+            status_code, details = execute_task(function_name, args, llm=llm, llm_for_phaseB=llm_for_phaseB)
+        
         return {"status_code": status_code, "details": details}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error - " + str(e))
 
 @app.get("/read")
 def read_file_endpoint(path: str):
