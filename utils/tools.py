@@ -2,7 +2,7 @@
 TOOLS = [
     {
         "name": "data_generation_task",
-        "description":  "Download datagen and generate data for project",
+        "description":  "Download datagen.py and generate data for project requires email argument",
         "parameters": {
             "type": "object",
             "properties": {
@@ -12,7 +12,7 @@ TOOLS = [
                 },
                 "email": {
                     "type": "string",
-                    "description": "The email to passed as argument to datagen.py"
+                    "description": "The email passed as argument to datagen.py"
                 }
             },
             "required": ["url", "email"],
