@@ -236,15 +236,15 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-def extract_credit_card_number(llm, system_message, input_path="/data/credit-card.png", output_path="/data/credit-card.txt"):
+def extract_credit_card_number(llm, system_prompt, user_prompt, input_path="/data/credit-card.png", output_path="/data/credit-card.txt"):
     try:
         # Encode image to Base64
         base64_image = encode_image(input_path)
 
         # Send request to LLM
         response = llm.getResponse(
-            "Extract the numerical text from the image without spaces.",
-            system_message,
+            system_prompt,
+            user_prompt,
             base64_image=base64_image
         )
 

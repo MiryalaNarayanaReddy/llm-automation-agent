@@ -74,7 +74,7 @@ def execute_task(name, args, llm=None, llm_for_phaseB=None):
 
     elif name == "extract_credit_card_number":
         if checkIsSafe(args["input_path"]):
-            return extract_credit_card_number(llm=llm, system_message=args["system_message"], input_path=args["input_path"], output_path=args["output_path"])
+            return extract_credit_card_number(llm=llm, system_prompt=args["system_prompt"], user_prompt=args["user_prompt"], input_path=args["input_path"], output_path=args["output_path"])
     
         else:
             # resource not allowed status code 403            
