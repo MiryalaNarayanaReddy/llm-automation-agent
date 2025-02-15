@@ -2,8 +2,12 @@ import os
 import json
 from pathlib import Path
 from PIL import Image
+import requests
 
 def checkIsSafe(filepath: str) -> bool:
+    # if https url then return true
+    if filepath.startswith("https://") or filepath.startswith("http://") or filepath.startswith("ftp://"):
+        return True
     abs_path = os.path.abspath(filepath)
     data_dir = os.path.abspath("/data")
 
@@ -93,6 +97,28 @@ def deleteFile(filepath: str) -> bool:
     
 
 # B6. Extract data from (i.e. scrape) a website
+
+
+def scrape_website(llm, url: str, system_prompt: str, output_path: str) -> bool:
+    try:
+        response = requests.get(url,verify=False)
+        if response.status_code != 200:
+            # print(f"Failed to fetch data from {url}, status code: {response.status_code}")
+            return 400, f"Failed to fetch data from {url}, status code: {response.status_code}"
+
+        scraped_data = llm.scrapeWebsite(response.text,system_prompt=system_prompt)
+        
+        with open(output_path, "w") as f:
+            f.write(scraped_data)
+        
+        return 200, f"Scraped website: {output_path}"
+    except requests.RequestException as e:
+        # print(f"Request error: {e}")
+        return 400, f"Request error: {e}"
+    except Exception as e:
+        # print(f"Unexpected error: {e}")    
+        return 400, f"Unexpected error: {e}"
+
 # B7. Compress or resize an image
 
 def compress_image(input_path: str, output_path: str) -> bool:

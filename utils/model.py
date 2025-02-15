@@ -153,3 +153,31 @@ class LLMModel:
         transcription_text = parsed_data["text"]
 
         return transcription_text
+    
+    def scrapeWebsite(self, website_code,system_prompt):
+        url = f"{self.base_url}/openai/v1/chat/completions"
+
+        headers = {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Construct message list
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": website_code}
+        ]
+      
+        payload = {
+            "model": "gpt-4o-mini",
+            "messages": messages
+        }
+
+        # Make request
+        response = requests.post(url=url, headers=headers, json=payload, verify=False)
+
+        res = response.json()
+
+        response_data = res.get("choices")[0].get("message").get("content").strip()
+
+        return response_data

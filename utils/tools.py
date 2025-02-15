@@ -257,6 +257,29 @@ TOOLS = [
         }   
     },
     {
+        "name": "scrape_website",
+        "description":  "Scrapes a website by getting website using requests and sending request to llm with website html and writes the result to an output file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the website to scrape."
+                },
+                "system_prompt": {
+                    "type": "string",
+                    "description": "The system prompt describing the task to be performed on the website."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the scraped data will be written."
+                }
+            },
+            "required": ["url", "system_prompt", "output_path"],
+            "additionalProperties": False
+        }   
+    },
+    {
         "name": "transcribe_audio",
         "description":  "Transcribes an audio file and writes the result to an output file.",
         "parameters": {

@@ -58,6 +58,7 @@ if there are multiple commands or scripts then make sure to return the same with
 Things to be run one after another in the same shell in the correct order types can mix and match in order to solve the task.
 python codes are run using uv after written to file.
 make sure to map the output of the commands to the corresponding function call.
+if there is any path not in /data then raise error with "path not allowed" error code
 '''
 
 import json

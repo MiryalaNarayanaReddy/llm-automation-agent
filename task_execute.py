@@ -16,8 +16,8 @@ from tasks.phaseB import deleteFile
 # from tasks.phaseB import cloneRepoAndCommit
 # from tasks.phaseB import runSqlQuery
 # from tasks.phaseB import compress_image
+from tasks.phaseB import scrape_website
 from tasks.phaseB import transcribe_audio
-
 from utils.execute_tool import execute_all
 import json
 
@@ -109,6 +109,13 @@ def execute_task(name, args, llm=None, llm_for_phaseB=None):
     #         # resource not allowed status code 403            
     #         return 403, f"Resource not allowed: {args['input_path']} or {args['output_path']}"
 
+    elif name == "scrape_website":
+        if checkIsSafe(args["url"]) :
+            return scrape_website(llm=llm, url=args["url"], system_prompt=args["system_prompt"], output_path=args["output_path"])
+        else:
+            # resource not allowed status code 403      
+            return 403, f"Resource not allowed: {args['url']}"
+        
     elif name == "transcribe_audio":
         if checkIsSafe(args["input_path"]):
             return transcribe_audio(llm=llm, input_path=args["input_path"], output_path=args["output_path"])
