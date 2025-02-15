@@ -4,6 +4,9 @@ import tempfile
 from dateutil.parser import parse
 import json
 import os 
+import sqlite3
+import base64
+from io import BytesIO
 
 def download_datagen(url, email):
     '''
@@ -164,7 +167,6 @@ def extract_recent_log_lines(logs_directory, output_path, num_files=10, line_num
         print(f"Error processing log files: {e}")
         return 400
 
-
 def generate_markdown_index(docs_directory, output_path):
     '''
     Finds all Markdown (`.md`) files in a directory and extracts the first occurrence of each H1.
@@ -200,4 +202,58 @@ def generate_markdown_index(docs_directory, output_path):
         return 200
     except Exception as e:
         print(f"Error generating index: {e}")
+        return 400
+
+
+
+def extract_email_sender(llm, system_message, input_path="/data/email.txt", output_path="/data/email-sender.txt"):
+    try:
+        with open(input_path, "r") as f:
+            email_content = f.read()
+        #   def getResponse(self, system_prompt, user_prompt, base64_image=None):
+
+        response = llm.getResponse(system_message, email_content)
+        email_sender = response["choices"][0]["message"]["content"].strip()
+        with open(output_path, "w") as f:
+            f.write(email_sender)
+        
+        return 200
+    except Exception as e:
+        print(f"Error extracting email sender: {e}")
+        return 400
+
+def extract_credit_card_number(llm, system_message,  input_path="/data/credit-card.png", output_path="/data/credit-card.txt"):
+    try:
+        # Open and encode image in base64
+        with open(input_path, "rb") as image_file:
+            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+
+        response = llm.getResponse(system_message,"Extract the credit card number from the following image (Base64 encoded):", base64_image)
+
+        card_number = response["choices"][0]["message"]["content"].replace(" ", "").strip()
+
+        # Save extracted card number
+        with open(output_path, "w") as f:
+            f.write(card_number)
+        
+        return 200
+    except Exception as e:
+        print(f"Error extracting credit card number: {e}")
+        return 400
+
+def total_gold_ticket_sales(db_path="/data/ticket-sales.db", output_path="/data/ticket-sales-gold.txt"):
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT SUM(units * price) FROM tickets WHERE type = 'Gold'")
+        total_sales = cursor.fetchone()[0] or 0
+        conn.close()
+        
+        with open(output_path, "w") as f:
+            f.write(str(total_sales))
+        
+        return 200
+    except Exception as e:
+        print(f"Error calculating ticket sales: {e}")
         return 400

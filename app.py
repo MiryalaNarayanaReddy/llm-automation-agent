@@ -64,7 +64,7 @@ async def root():
 def run_task(task: str):
     try:
         # result = execute_task(task)
-        result = llm.getResponse(task)
+        result = llm.parseTask(task)
 
         function_call = result["choices"][0]["message"]["function_call"]
 
@@ -73,7 +73,7 @@ def run_task(task: str):
             function_name = function_call["name"]
             arguments = function_call["arguments"]
             args = json.loads(arguments)  
-            execute_task(function_name, args)
+            execute_task(function_name, args, llm=llm)
 
         return {"status": "success", "output": result}
     except ValueError as e:

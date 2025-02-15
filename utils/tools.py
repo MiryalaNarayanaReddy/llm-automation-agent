@@ -137,6 +137,74 @@ TOOLS = [
         }
     },
 
+    {
+        "name": "extract_email_sender",
+        "description":  "Extracts the email sender from the given email content and sends it to the LLM with the given system and user messages. The result is written to the output file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "system_message": {
+                    "type": "string",
+                    "description": "The system message to use for the task explaining the task to the LLM."
+                },
+                "input_path": {
+                    "type": "string",
+                    "description": "The path to the input file containing the email content."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the email sender will be written."
+                }
+            },
+            "required": ["system_message", "input_path", "output_path"],
+            "additionalProperties": False   
+
+        }
+    },
+    {
+        "name": "extract_credit_card_number",
+        "description":  "Extracts the credit card number from the given image and sends it to the LLM with the given system and user messages. The result is written to the output file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "system_message": {
+                    "type": "string",
+                    "description": "The system message to use for the task explaining the task to the LLM."
+                },
+                "input_path": {
+                    "type": "string",
+                    "description": "The path to the input file containing the image."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the credit card number will be written."
+                }   
+            },
+            "required": ["system_message", "input_path", "output_path"],    
+            "additionalProperties": False
+        }
+
+    },
+    {
+        "name": "total_gold_ticket_sales",
+        "description":  "Calculates the total sales of gold tickets from a given database and writes the result to an output file. This uses sql query SELECT SUM(units * price) FROM tickets WHERE type = 'Gold'",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "db_path": {
+                    "type": "string",
+                    "description": "The path to the database file containing the ticket sales data."
+                },
+                "output_path": {
+                    "type": "string",
+                    "description": "The path to the output file where the total sales will be written."
+                }
+            },
+            "required": ["db_path", "output_path"],
+            "additionalProperties": False
+        }
+    }
+
 ]
 
     # {

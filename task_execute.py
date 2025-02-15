@@ -5,9 +5,13 @@ from tasks.phaseA import sort_json_array
 from tasks.phaseA import extract_recent_log_lines
 from tasks.phaseA import generate_markdown_index
 
+from tasks.phaseA import extract_email_sender
+from tasks.phaseA import extract_credit_card_number
+from tasks.phaseA import total_gold_ticket_sales
+
 import json
 
-def execute_task(name, args):
+def execute_task(name, args, llm=None):
      
     print("------------------------------")
     print("name", name)
@@ -30,6 +34,15 @@ def execute_task(name, args):
     
     elif name == "generate_markdown_index":
         generate_markdown_index(docs_directory=args["docs_directory"], output_path=args["output_path"])
+
+    elif name == "extract_email_sender":
+        extract_email_sender(llm=llm, system_message=args["system_message"], input_path=args["input_path"], output_path=args["output_path"])
+
+    elif name == "extract_credit_card_number":
+        extract_credit_card_number(llm=llm, system_message=args["system_message"], input_path=args["input_path"], output_path=args["output_path"])
+
+    elif name == "total_gold_ticket_sales":
+        total_gold_ticket_sales(db_path=args["db_path"], output_path=args["output_path"])
 
     else:
         print("Function not found")
