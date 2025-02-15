@@ -73,9 +73,8 @@ def run_task(task: str):
             function_name = function_call["name"]
             arguments = function_call["arguments"]
             args = json.loads(arguments)  
-            execute_task(function_name, args, llm=llm)
-
-        return {"status": "success", "output": result}
+            status_code, details = execute_task(function_name, args, llm=llm)
+        return {"status_code": status_code, "details": details}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

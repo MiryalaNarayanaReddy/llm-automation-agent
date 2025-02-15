@@ -22,24 +22,28 @@ def download_datagen(url, email):
     try:
         response = requests.get(url)
         if response.status_code != 200:
-            print(f"Failed to download script, status code: {response.status_code}")
-            return 400
+            # print(f"Failed to download script, status code: {response.status_code}")
+            return 400, f"Failed to download script, status code: {response.status_code}"
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as temp_script:
             temp_script.write(response.content)
             temp_script_path = temp_script.name
 
         result = subprocess.run(["uv", "run", temp_script_path, f"email={email}"], check=True)
-        return 200 if result.returncode == 0 else 400
+        # return 200 if result.returncode == 0 else 400
+        if result.returncode == 0:
+            return 200, f"Executed script: {temp_script_path}"
+        else:
+            return 400, f"Failed to execute script, return code: {result.returncode}"
     except requests.RequestException as e:
-        print(f"Request error: {e}")
-        return 400
+        # print(f"Request error: {e}")
+        return 400, f"Request error: {e}"
     except subprocess.CalledProcessError as e:
-        print(f"Execution error: {e}")
-        return 400
+        # print(f"Execution error: {e}")
+        return 400, f"Execution error: {e}"
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        return 400
+        # print(f"Unexpected error: {e}")
+        return 400 , f"Unexpected error: {e}"
 
 def format_readme(path, prettier_package="prettier@3.4.2"):
     '''
@@ -54,10 +58,14 @@ def format_readme(path, prettier_package="prettier@3.4.2"):
     '''
     try:
         result = subprocess.run(["npx", prettier_package, "--write", path], check=True)
-        return 200 if result.returncode == 0 else 400
+        # return 200 if result.returncode == 0 else 400
+        if result.returncode == 0:
+            return 200, f"Formatted file: {path}"
+        else:  
+            return 400, f"Failed to format file, return code: {result.returncode}"
     except subprocess.CalledProcessError as e:
-        print(f"Formatting error: {e}")
-        return 400
+        # print(f"Formatting error: {e}")
+        return 400, f"Formatting error: {e}"
 
 def count_week_days(file_path, day, output_path):
     '''
@@ -82,8 +90,8 @@ def count_week_days(file_path, day, output_path):
     }
     
     if day not in week_day_map:
-        print(f"Invalid day: {day}")
-        return 400
+        # print(f"Invalid day: {day}")
+        return 400, f"Invalid day: {day}"
 
     try:
         with open(file_path, "r") as f:
@@ -94,10 +102,10 @@ def count_week_days(file_path, day, output_path):
         with open(output_path, "w") as f:
             f.write(str(count))
         
-        return 200
+        return 200, f"Count of {day} days: {count}"
     except Exception as e:
-        print(f"Error processing file: {e}")
-        return 400
+        # print(f"Error processing file: {e}")
+        return 400, f"Error processing file: {e}"
 
 def sort_json_array(input_path, output_path, sort_keys):
     '''
@@ -116,18 +124,18 @@ def sort_json_array(input_path, output_path, sort_keys):
             data = json.load(f)
 
         if not isinstance(data, list):
-            print("Input JSON is not a list of objects.")
-            return 400
+            # print("Input JSON is not a list of objects.")
+            return 400, f"Input JSON is not a list of objects."
 
         sorted_data = sorted(data, key=lambda x: tuple(x.get(key, "") for key in sort_keys))
         
         with open(output_path, "w") as f:
             json.dump(sorted_data, f, indent=4)
         
-        return 200
+        return 200, f"Sorted JSON file: {output_path}"
     except Exception as e:
-        print(f"Error processing JSON file: {e}")
-        return 400
+        # print(f"Error processing JSON file: {e}")
+        return 400, f"Error processing JSON file: {e}"
 
 def extract_recent_log_lines(logs_directory, output_path, num_files=10, line_number=1):
     '''
@@ -162,10 +170,10 @@ def extract_recent_log_lines(logs_directory, output_path, num_files=10, line_num
         with open(output_path, "w") as f:
             f.write("\n".join(recent_lines) + "\n")
         
-        return 200
+        return 200, f"Extracted {len(recent_lines)} lines from {num_files} log files."
     except Exception as e:
-        print(f"Error processing log files: {e}")
-        return 400
+        # print(f"Error processing log files: {e}")
+        return 400, f"Error processing log files: {e}"
 
 def generate_markdown_index(docs_directory, output_path):
     '''
@@ -199,10 +207,10 @@ def generate_markdown_index(docs_directory, output_path):
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(index, f, indent=4)
         
-        return 200
+        return 200, f"Generated index: {output_path}"
     except Exception as e:
-        print(f"Error generating index: {e}")
-        return 400
+        # print(f"Error generating index: {e}")
+        return 400, f"Error generating index: {e}"
 
 
 
@@ -217,10 +225,10 @@ def extract_email_sender(llm, system_message, input_path="/data/email.txt", outp
         with open(output_path, "w") as f:
             f.write(email_sender)
         
-        return 200
+        return 200, f"Extracted email sender: {email_sender}"
     except Exception as e:
-        print(f"Error extracting email sender: {e}")
-        return 400
+        # print(f"Error extracting email sender: {e}")
+        return 400, f"Error extracting email sender: {e}"
 
 def encode_image(image_path):
     """Encodes an image as Base64."""
@@ -247,10 +255,10 @@ def extract_credit_card_number(llm, system_message, input_path="/data/credit-car
         with open(output_path, "w") as f:
             f.write(card_number)
         
-        return 200
+        return 200, f"Extracted credit card number: {card_number}"
     except Exception as e:
-        print(f"Error extracting credit card number: {e}")
-        return 400
+        # print(f"Error extracting credit card number: {e}")
+        return 400, f"Error extracting credit card number: {e}"
 
 def get_most_similar_comments(llm, input_path="/data/comments.txt", output_path="/data/comments-similar.txt", top_n=2):
     with open(input_path, "r", encoding="utf-8") as f:
@@ -275,7 +283,7 @@ def total_gold_ticket_sales(db_path="/data/ticket-sales.db", output_path="/data/
         with open(output_path, "w") as f:
             f.write(str(total_sales))
         
-        return 200
+        return 200, f"Calculated total sales of gold tickets: {total_sales}"
     except Exception as e:
-        print(f"Error calculating ticket sales: {e}")
-        return 400
+        # print(f"Error calculating ticket sales: {e}")
+        return 400, f"Error calculating ticket sales: {e}"

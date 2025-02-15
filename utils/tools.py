@@ -227,35 +227,63 @@ TOOLS = [
             "required": ["db_path", "output_path"],
             "additionalProperties": False
         }
-    }
+    },
+    {
+        "name": "delete_file",
+        "description":  "Deletes a file from the given path.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "The path to the file to delete."
+                }
+            },
+            "required": ["path"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "name": "phaseB_task",  
+        "description": "if any task is not matching then use this task",
+        "parameters": {
+            "type": "object",
+            "properties": {
+            },    
+            "required": [],
+            "additionalProperties": False
+          
+        }   
+    }   
 
 ]
 
-    # {
-    #   "name": "execute_all",
-    #   "description": "Executes a list of bash commands, Python code snippets, and Python scripts.",
-    #   "parameters": {
-    #     "type": "object",
-    #     "properties": {
-    #       "bash_commands": {
-    #         "type": "array",
-    #         "description": "List of bash commands to execute.",
-    #         "items": {
-    #           "type": "string",
-    #           "description": "A bash command to execute."
-    #         }
-    #       },
-    #       "python_codes": {
-    #         "type": "array",
-    #         "description": "List of Python code snippets to execute.",
-    #         "items": {
-    #           "type": "string",
-    #           "description": "A Python code snippet to execute."
-    #         }
-    #       },
-    #     },
-    #     "required": ["bash_commands", "python_snippets", "python_scripts"],
-    #     "additionalProperties": False
-    #   }
-    # }
+# {
+#       "name": "execute_bash_code_based_task",
+#       "description": "Executes a list of bash commands (involve npx , downloading if  necessary) , Python code snippets, and Python scripts we are using uv to run the code.",
+#       "parameters": {
+#         "type": "object",
+#         "properties": {
+#           "bash_commands": {
+#             "type": "array",
+#             "description": "List of bash commands to execute.",
+#             "items": {
+#               "type": "string",
+#               "description": "A bash command to execute."
+#             }
+#           },
+#           "python_codes": {
+#             "type": "array",
+#             "description": "List of Python code snippets to execute.",
+#             "items": {
+#               "type": "string",
+#               "description": "A Python code snippet to execute."
+#             }
+#           },
+#         },
+#         "required": ["bash_commands", "python_snippets", "python_scripts"],
+#         "additionalProperties": False
+#       }
+#     }
     
