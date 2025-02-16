@@ -119,6 +119,16 @@ def read_file_endpoint(path: str):
     return content
 
 
+import subprocess
+
+# set git config
+try: 
+    subprocess.run(["git", "config", "--global", "user.email", "narayana@gmail.com"])
+    subprocess.run(["git", "config", "--global", "user.name", "narayana"])
+    print("Git config set successfully")
+except subprocess.CalledProcessError as e:
+    print(f"Error setting git config: {e}")
+
 if __name__ == "__main__":
     import uvicorn  
     uvicorn.run(app, host="0.0.0.0", port=8000)

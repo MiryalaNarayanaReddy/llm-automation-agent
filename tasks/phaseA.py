@@ -29,7 +29,7 @@ def download_datagen(url, email):
             temp_script.write(response.content)
             temp_script_path = temp_script.name
 
-        result = subprocess.run(["uv", "run", temp_script_path, f"email={email}"], check=True)
+        result = subprocess.run(["uv", "run", temp_script_path, f"{email}"], check=True)
         # return 200 if result.returncode == 0 else 400
         if result.returncode == 0:
             return 200, f"Executed script: {temp_script_path}"
