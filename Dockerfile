@@ -15,6 +15,12 @@ WORKDIR /
 # Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# Install required dependencies
+RUN apt-get update && apt-get install -y curl
+
+# set git config
+RUN git config --global user.email "narayana@gmail.com"
+RUN git config --global user.name "narayana"
 
 # make data directory with write permissions
 RUN mkdir -p /data
