@@ -11,7 +11,7 @@ def execute_bash_command(command: str):
     except subprocess.CalledProcessError as e:
         return {"type": "bash_commands", "output": f"Error: {e.stderr.strip()}", "success": False}
 
-def execute_python_code(python_code: str, filename: str = "temp_script.py"):
+def execute_python_code(python_code: str, filename: str = "./temp_script.py"):
     """Write Python code to a file and execute it using uv."""
     with open(filename, "w") as f:
         f.write(python_code)

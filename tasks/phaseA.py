@@ -276,8 +276,7 @@ def get_most_similar_comments(llm, input_path="/data/comments.txt", output_path=
         return 200, f"Extracted {len(top_n_similar_sentences)} most similar comments: {output_path}"
     
     except Exception as e:
-        # print(f"Error extracting credit card number: {e}")
-        return 400, f"Error extracting credit card number: {e}"
+        return 400, f"Error: {e}"
 
 def total_gold_ticket_sales(db_path="/data/ticket-sales.db", output_path="/data/ticket-sales-gold.txt"):
     try:
