@@ -130,7 +130,7 @@ def sort_json_array(input_path, output_path, sort_keys):
         sorted_data = sorted(data, key=lambda x: tuple(x.get(key, "") for key in sort_keys))
         
         with open(output_path, "w") as f:
-            json.dump(sorted_data, f, indent=4)
+            json.dump(sorted_data, f)
         
         return 200, f"Sorted JSON file: {output_path}"
     except Exception as e:

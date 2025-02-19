@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-
+from fastapi.responses import Response
 
 from utils.model import LLMModel
 from utils.tools import TOOLS
@@ -112,11 +112,14 @@ def run_task(task: str):
 
 @app.get("/read")
 def read_file_endpoint(path: str):
-    with open(path, "r") as f:
-        content = f.read()
-    if content is None:
+    try:
+        with open(path, "r") as f:
+            content = f.read()
+        return Response(content, media_type="text/plain")
+    except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File not found")
-    return content
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 import subprocess
@@ -133,6 +136,4 @@ if __name__ == "__main__":
     import uvicorn  
     uvicorn.run(app, host="0.0.0.0", port=8000)
     # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
-
-
 

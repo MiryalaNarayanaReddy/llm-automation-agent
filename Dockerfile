@@ -7,7 +7,7 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 
 # Install Node.js
-RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
 # Set working directory
 WORKDIR / 
