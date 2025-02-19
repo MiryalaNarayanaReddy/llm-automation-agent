@@ -57,6 +57,38 @@ If needed, use placeholder values. "
             return 400, f"Function not found: {function_name}"
     else:
         return 400, "Function call not found"
+import json
+
+def request_python_fix(llm_for_phaseB, error_message: str, code_snippet: str, max_retries=3):
+    """Request a fix from the LLM when a Python script fails."""
+    print(f"Requesting fix from LLM for error: {error_message}")
+    
+    prompt = f'''
+    Debug the following Python code and provide a fixed version.
+    Ensure that the logic remains the same and only fix the error(s).
+    ```python
+    {code_snippet}
+    ```
+    If necessary, use placeholder values where required.
+    '''
+    
+    llm_response = llm_for_phaseB.fix_request(prompt, error_message, code_snippet)
+    function_call = llm_response.get("choices", [{}])[0].get("message", {}).get("function_call")
+    
+    if function_call:
+        function_name = function_call.get("name")
+        if function_name == "execute_code_task":
+            arguments = json.loads(function_call.get("arguments", "{}"))  
+            
+            if "commands" in arguments:
+                status_code, details = execute_all(llm_for_phaseB, arguments['commands'], max_retries=max_retries-1)
+                return status_code, details
+            else:
+                return 400, "No commands returned from LLM"
+        else:
+            return 400, f"Function not found: {function_name}"
+    else:
+        return 400, "Function call not found"
 
 def execute_all(llm_for_phaseB, commands: list[dict], max_retries=3):
     """Execute a mix of Bash commands and Python code, retrying failed commands."""
@@ -84,8 +116,13 @@ def execute_all(llm_for_phaseB, commands: list[dict], max_retries=3):
                 break  # Move to the next command if successful
             else:
                 print(f"Attempt {retries + 1} failed: {result['output']}")
-                comd = command["cmd"] if command["type"] == "bash_commands" else command["code"]
-                code, detail = request_fix_from_llm(llm_for_phaseB, result['output'], comd, max_retries=max_retries-1)
+                # comd = command["cmd"] if command["type"] == "bash_commands" else command["code"]
+                code = 200
+                detail = ""
+                if command['type'] == "bash_commands":
+                    code, detail = request_fix_from_llm(llm_for_phaseB, result['output'], command['cmd'], max_retries=max_retries-1)
+                else:
+                    code, detail = request_python_fix(llm_for_phaseB,result['output'],command['code'], max_retries=max_retries-1)
 
                 if code == 200:
                     break  # Move to the next command if successful

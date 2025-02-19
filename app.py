@@ -53,15 +53,17 @@ make sure to map the output of the commands to the corresponding function call.
 llm_for_phaseB = LLMModel("gpt-4o-mini", AIPROXY_TOKEN, PHASE_B_TOOLS)
 
 llm_for_phaseB.systemPrompt = '''
-You are an automation agent that executes tasks using Bash commands and Python scripts.
+You are an automation agent that executes tasks using Bash commands with cmd and Python scripts with code key.
 
 Return commands and scripts without modification.
-Maintain execution order, mixing Bash and Python where needed.
+Maintain execution order, mixing Bash and Python where needed. (do not use bash command to install python packages inclue them in dependencies in code)
 Python scripts are written to a file and executed using uv.
 Map outputs to function calls.
+if a library is inbuilt in the python code then do not include its installation in bash commands.
 Raise error: path not allowed for paths outside /data.
+do not include inbuilt libraries like sqlite3 or dateutil in dependencies list for uv but include them for python code
 Use function tools for execution.
-
+if any values are required like email or password then use placeholder random values like "john@gmail.com" or "password123"
 '''
 
 import json

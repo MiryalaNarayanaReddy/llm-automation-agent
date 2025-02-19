@@ -322,9 +322,10 @@ PHASE_B_TOOLS = [
     {
         "name": "execute_code_task",
         "description": '''
-        Executes a list of Bash commands, Python code snippets, and Python scripts sequentially. 
+        Executes a list of Bash commands, Python code sequentially. 
         - Bash commands may involve `npx`, curl.
-        - if anything is to be install do not use sudo instead use something like "apt-get update && apt-get install -y pandoc"
+        - if anything is to be install do not use sudo instead use something like "apt-get update && apt-get install -y pandoc "
+        - if some libraries are in built do not install them . like sqlite3 dateutil etc
         - Python code snippets are written to a file and executed using `uv`.
         ''',
         "parameters": {
@@ -338,7 +339,7 @@ PHASE_B_TOOLS = [
                         "properties": {
                             "type": {
                                 "type": "string",
-                                "enum": ["bash_commands", "python_code", "python_script"],
+                                "enum": ["bash_commands", "python_code"],
                                 "description": "The type of command being executed."
                             },
                             "cmd": {
@@ -348,7 +349,24 @@ PHASE_B_TOOLS = [
                             },
                             "code": {
                                 "type": "string",
-                                "description": "Python code or script to execute.",
+                                "description": '''
+                                Python code or script to execute. 
+                                if requirements are inbuilt libraries like sqlite3 then do not add them to dependencies.
+                                include requirements at the top of the file 
+
+                                exactly in the following format with # for each line.
+                                # /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "faker",
+#     "httpx",
+#     "numpy",
+#     "pillow",
+#     "python-dateutil",
+# ]
+# ///
+do not include inbuilt libraries like sqlite3 or dateutil in dependencies list
+                                ''',
                                 "nullable": True
                             }
                         },
