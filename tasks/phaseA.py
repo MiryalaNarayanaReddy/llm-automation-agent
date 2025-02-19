@@ -130,7 +130,7 @@ def sort_json_array(input_path, output_path, sort_keys):
         sorted_data = sorted(data, key=lambda x: tuple(x.get(key, "") for key in sort_keys))
         
         with open(output_path, "w") as f:
-            json.dump(sorted_data, f, indent=4)
+            json.dump(sorted_data, f)
         
         return 200, f"Sorted JSON file: {output_path}"
     except Exception as e:
@@ -276,8 +276,7 @@ def get_most_similar_comments(llm, input_path="/data/comments.txt", output_path=
         return 200, f"Extracted {len(top_n_similar_sentences)} most similar comments: {output_path}"
     
     except Exception as e:
-        # print(f"Error extracting credit card number: {e}")
-        return 400, f"Error extracting credit card number: {e}"
+        return 400, f"Error: {e}"
 
 def total_gold_ticket_sales(db_path="/data/ticket-sales.db", output_path="/data/ticket-sales-gold.txt"):
     try:

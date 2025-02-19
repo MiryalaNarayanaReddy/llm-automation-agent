@@ -1,9 +1,10 @@
 import requests
 import json
+import numpy as np
 
 class LLMModel:
     def __init__(self, model, token, tools):
-        self.base_url = "https://llmfoundry.straive.com"
+        self.base_url = "https://aiproxy.sanand.workers.dev/"
         self.model = model
         self.token = token
         self.tools = tools
@@ -60,7 +61,7 @@ class LLMModel:
     
 
     def get_similarity_matrix(self, docs):
-        URL = f"{self.base_url}/similarity"
+        URL = f"{self.base_url}/openai/v1/embeddings"
         
         headers = {
             "Authorization": f"Bearer {self.token}",
@@ -69,30 +70,26 @@ class LLMModel:
         
         data = {
             "model": "text-embedding-3-small",
-            "docs": docs,
-            "precision": 5
+            "input": docs,
         }
         
         response = requests.post(URL, headers=headers, json=data)
-        return response.json()
+        _embeddings = response.json()
+        embeddings = np.array([d["embedding"] for d in _embeddings["data"]])
+        similarity_matrix = embeddings @ embeddings.T
+        np.fill_diagonal(similarity_matrix, -np.inf)
+        return similarity_matrix
     
     def getMostSimilarDocs(self, docs, n=3):
-        response = self.get_similarity_matrix(docs)
-        similarity_matrix = response["similarity"]
+        similarity_matrix = self.get_similarity_matrix(docs)
         pairs = []
         
-        # Get all pairs with similarity scores
         for i in range(len(docs)):
             for j in range(i + 1, len(docs)):
                 pairs.append((similarity_matrix[i][j], docs[i], docs[j]))
         
-        # Sort by similarity in descending order
         pairs.sort(reverse=True, key=lambda x: x[0])
-        
-        # Select top N pairs
         top_pairs = pairs[:n]
-
-        # get  list of top n sentences
         top_sentences = [pair[1] for pair in top_pairs]
         
         return top_sentences

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-
+from fastapi.responses import Response
 
 from utils.model import LLMModel
 from utils.tools import TOOLS
@@ -53,15 +53,17 @@ make sure to map the output of the commands to the corresponding function call.
 llm_for_phaseB = LLMModel("gpt-4o-mini", AIPROXY_TOKEN, PHASE_B_TOOLS)
 
 llm_for_phaseB.systemPrompt = '''
-You are an automation agent that executes tasks using Bash commands and Python scripts.
+You are an automation agent that executes tasks using Bash commands with cmd and Python scripts with code key.
 
 Return commands and scripts without modification.
-Maintain execution order, mixing Bash and Python where needed.
+Maintain execution order, mixing Bash and Python where needed. (do not use bash command to install python packages inclue them in dependencies in code)
 Python scripts are written to a file and executed using uv.
 Map outputs to function calls.
+if a library is inbuilt in the python code then do not include its installation in bash commands.
 Raise error: path not allowed for paths outside /data.
+do not include inbuilt libraries like sqlite3 or dateutil in dependencies list for uv but include them for python code
 Use function tools for execution.
-
+if any values are required like email or password then use placeholder random values like "john@gmail.com" or "password123"
 '''
 
 import json
@@ -112,11 +114,14 @@ def run_task(task: str):
 
 @app.get("/read")
 def read_file_endpoint(path: str):
-    with open(path, "r") as f:
-        content = f.read()
-    if content is None:
+    try:
+        with open(path, "r") as f:
+            content = f.read()
+        return Response(content, media_type="text/plain")
+    except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File not found")
-    return content
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 import subprocess
@@ -133,6 +138,4 @@ if __name__ == "__main__":
     import uvicorn  
     uvicorn.run(app, host="0.0.0.0", port=8000)
     # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
-
-
 
