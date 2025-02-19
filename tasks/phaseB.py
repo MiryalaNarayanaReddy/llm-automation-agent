@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from PIL import Image
 import requests
+import speech_recognition as sr
+from pydub import AudioSegment
 
 def checkIsSafe(filepath: str) -> bool:
     # if https url then return true
@@ -147,11 +149,35 @@ def compress_image(input_path: str, output_path: str) -> bool:
 # B8. Transcribe audio from an MP3 file
 
 
+
+
+def transcribe(input_path: str) -> bool:
+        
+    # convert mp3 file to wav                                                       
+    sound = AudioSegment.from_mp3(input_path)
+    sound.export("transcript.wav", format="wav")
+
+
+    # transcribe audio file                                                         
+    AUDIO_FILE = "transcript.wav"
+
+    # use the audio file as the audio source                                        
+    r = sr.Recognizer()
+    with sr.AudioFile(AUDIO_FILE) as source:
+            audio = r.record(source)  # read the entire audio file                  
+
+            # print("Transcription: " + r.recognize_google(audio))
+            transcription_response = r.recognize_google(audio)
+            return transcription_response
+
+
 def transcribe_audio(llm, input_path: str, output_path: str) -> bool:
     try:
         # Transcribe audio from an MP3 file
-        transcription_response = llm.transcribeAudio(input_path)
-        parsed_text = llm.parseTranscription(transcription_response)
+        # transcription_response = llm.transcribeAudio(input_path)
+        
+        # parsed_text = llm.parseTranscription(transcription_response)
+        parsed_text= transcribe(input_path=input_path)
 
         with open(output_path, "w") as f:
             f.write(parsed_text)

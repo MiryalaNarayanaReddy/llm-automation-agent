@@ -18,6 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install required dependencies
 RUN apt-get update && apt-get install -y curl
 
+# install ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg
+
 # set git config
 RUN git config --global user.email "narayana@gmail.com"
 RUN git config --global user.name "narayana"
